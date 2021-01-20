@@ -1,0 +1,57 @@
+ngless "1.0"
+local import "motus" version "2.5"
+import "parallel" version "0.6"
+import "mocat" version "0.0"
+import "igc" version "0.0"
+
+
+samples = readlines(ARGV[1] + '/all_samples')
+sample = lock1(samples)
+input = load_mocat_sample(ARGV[1] + '/' + sample)
+
+# preprocess
+input = preprocess(input, keep_singles=True) using |read|:
+    read = substrim(read, min_quality=25)
+    if len(read) < 45:
+        discard
+
+# map against the human reference and discard
+mapped = map(input, reference='hg38.p10')
+
+mapped = select(mapped) using |mr|:
+    mr = mr.filter(min_match_size=45, min_identity_pc=90, action={unmatch})
+    if mr.flag({mapped}):
+        discard
+
+input = as_reads(mapped)
+
+# run mOTUs
+count = motus(input, sample=sample, no_marker_genes=2)
+
+collect(count,
+        current=sample,
+        allneeded=samples,
+        ofile=ARGV[1] + '/output/all_samples.motusv2.5_g2_l75.tsv',
+        auto_comments=[{date}, {hash}, {script}])
+
+# map against the igc
+mapped = map(input, reference='igc', mode_all=True)
+
+# read filtering after mapping to the IGC?
+# mapped = select(mapped) using |mr|:
+#     mr = mr.filter(min_match_size=45, min_identity_pc=97, action={unmatch})
+
+# count and collect eggNOG_OG
+count_eggNOG = count(mapped, multiple={1overN}, features=['eggNOG_OG'], normalization={scaled})
+collect(count_eggNOG, current=sample, allneeded=samples, ofile=ARGV[1] + '/output/all_samples.eggNOG_OG.tsv')
+
+# collect KEGG_ko
+count_KEGG = count(mapped, multiple={1overN}, features=['KEGG_ko'], normalization={scaled})
+collect(count_KEGG, current=sample, allneeded=samples, ofile=ARGV[1] + '/output/all_samples.KEGG_ko.tsv')
+
+# collect IGC on gene level
+count_igc = count(mapped, multiple={1overN}, normalization={scaled}, features=['seqname'])
+collect(count_igc, current=sample, allneeded=samples, ofile=ARGV[1] + '/output/all_samples.IGC.tsv')
+
+# also collect QC statistics
+collect(qcstats({fastq}), ofile=ARGV[1] + '/output/preprocessing_fqstats.txt', current=sample, allneeded=samples)
