@@ -1,0 +1,35 @@
+
+
+disease:
+    ART: '#ccd8ed'
+    AS: '#7f9ed2'
+    RA: '#3263b7'
+    T1D: '#003da5'
+    CRC: '#F56484'
+    ADA: '#f9a2b5'
+    ACVD: '#7FB428'
+    HTN: '#A1BE1F'
+    pHTN: '#E2E868'
+    CDI: '#4b847a'
+    nCDI: '#81a8a1'
+    EDD: '#b7cdc9'
+    HIV: '#B86958'
+    CD: '#996CCE'
+    IBD: '#996CCE'
+    UC: '#ccb5e6'
+    LIV: '#8F004B'
+    NAFLD: '#e08ea8'
+    NASH: '#efc6d3'
+    PD: '#F49E17'
+    ASD: '#EFC06E'
+    OB: '#f0c948'
+    IGT: '#f6de8f'
+    T2D: '#daab12'
+    MS: '#ecbb19'
+
+type:
+    RDP: "#A1BE1F"
+    eggNOG: "#F4C61F"
+    humann2: "#3B6FB6"
+    metaphlan: "#F49E17"
+    mOTUs2: "#734595"
