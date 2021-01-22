@@ -16,3 +16,4 @@ control_augmentation/weights
 control_augmentation/files
 control_augmentation/submission_temp
 control_augmentation/models
+ml_pitfalls/predictions*
