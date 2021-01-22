@@ -1,0 +1,24 @@
+##
+## This file describes the parameters to be explored by SIAMCAT in the
+##     parameter space exploration exercise
+##
+
+# parameters for global feature filtering
+filtering:
+    methods: ['abundance', 'prevalence', 'abundance;prevalence']
+    cutoffs:
+        abundance: [1e-07, 1e-06, 1e-05]
+        prevalence: [0.05, 0.1]
+
+# parameters for global normalization
+normalization:
+    methods: ['none', 'log.std', 'log.clr', 'rank.std']
+    log.n0: [1e-09, 1e-08, 1e-07]
+    sd.min.q: [0.0, 0.1]
+
+
+training:
+    methods: ['lasso', 'enet', 'randomForest']
+    perform.fs: [TRUE]
+    fs.method: ['AUC', 'gFC']
+    fs.cutoff: [100, 500, 1000, 2000]
