@@ -19,32 +19,48 @@ if (!dir.exists(here('temp'))){
 }
 
 # ##############################################################################
-# Download SIAMCAT data from Zenodo
-# TODO download zipped metadata and unzip
-# download zipped mOTU profiles and unzip
-# download zipped eggNOG profiles and unzip
+# Download internal data from Zenodo
 
-datasets <- c('CN-T2D', 'SE-T2D', 'DE-PD', 'metaHIT-IBD', 'CN-RA', 'FR-CRC',
-              'AT-CRC', 'CN-CRC', 'US-CRC', 'DE-CRC', 'SP-NAFLD', 'CN-AS',
-              'CN-ACVD', 'Lewis-IBD', 'He-IBD', 'Franzosa-IBD', 'JP-CRC',
-              'US-NAFLD', 'KZ-MS', 'HMP2-IBD')
-for (d in datasets){
-  # metadata
-  if (!file.exists(here('data', 'meta', paste0(d, '.tsv')))){
-    file.move(here('temp', paste0(d, '.tsv')),
-              here('data', 'meta'))
-  }
-  # mOTUs
-  if (!file.exists(here('data', 'features', paste0(d, '_motus.tsv')))){
-    file.move(here('temp', paste0(d, '_motus.tsv')),
-              here('data', 'features'))
-  }
-  # eggNOG
-  if (!file.exists(here('data', 'features', paste0(d, '_eggNOG.tsv')))){
-    file.move(here('temp', paste0(d, '_eggNOG.tsv')),
-              here('data', 'features'))
-  }
+# download zipped metadata and unzip
+meta.file <- 'https://zenodo.org/api/files/6583a5bd-ff64-4482-a2a0-f86f097eef2e/metadata.zip'
+download.file(meta.file, destfile = here('temp', 'metadata.zip'))
+ref.md5sum <- '8a962531b6697ad19f84cb3772da5061'
+check.md5sum <- md5sum(here('temp', 'metadata.zip'))
+if (!ref.md5sum==check.md5sum){
+  stop('Something went wrong when downloading the metadata files!')
 }
+unzip(here('temp', 'metadata.zip'), exdir = here('temp'))
+metadata.files <- list.files(here('temp'), pattern = 'meta_.*.tsv')
+map(metadata.files, 
+    .f = function(x){file.move(here("temp", x), here("data", 'meta'))})
+
+# download zipped mOTU profiles and unzip
+motus.file <- 'https://zenodo.org/api/files/6583a5bd-ff64-4482-a2a0-f86f097eef2e/motus.zip'
+download.file(motus.file, destfile = here('temp', 'motus.zip'))
+ref.md5sum <- 'd89154e4248ad283eaeadd418606b2e2'
+check.md5sum <- md5sum(here('temp', 'motus.zip'))
+if (!ref.md5sum==check.md5sum){
+  stop('Something went wrong when downloading the mOTUs_v2 files!')
+}
+unzip(here('temp', 'motus.zip'), exdir = here('temp'))
+motus.files <- list.files(here('temp'), pattern = 'motus.tsv')
+map(motus.files, 
+    .f = function(x){file.move(here("temp", x), 
+                               here("data", 'features', 'motus'))})
+
+# download zipped eggNOG profiles and unzip
+eggNOG.file <- 'https://zenodo.org/api/files/6583a5bd-ff64-4482-a2a0-f86f097eef2e/eggNOG.zip'
+download.file(eggNOG.file, destfile = here('temp', 'eggNOG.zip'))
+ref.md5sum <- 'fad5f59ffdc6a20316eee17aa010128e'
+check.md5sum <- md5sum(here('temp', 'eggNOG.zip'))
+if (!ref.md5sum==check.md5sum){
+  stop('Something went wrong when downloading the eggNOG files!')
+}
+unzip(here('temp', 'eggNOG.zip'), exdir = here('temp'))
+eggNOG.files <- list.files(here('temp'), pattern = 'meta_.*.tsv')
+map(eggNOG.files, 
+    .f = function(x){file.move(here("temp", x), 
+                               here("data", 'features', 'eggNOG'))})
 
 # ##############################################################################
 # mOTUs database (taxonomy file)
